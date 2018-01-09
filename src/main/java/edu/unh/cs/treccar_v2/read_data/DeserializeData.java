@@ -260,6 +260,12 @@ public class DeserializeData {
                 final ArrayList<String> array = getByteArray(((Array) item).getDataItems());
                 pageMetadata.getInlinkIds().addAll(array);
             } else if (tagValue == 6L) {
+                // compatibility with v1.6
+                final ArrayList<String> array = getUnicodeArray(((Array) item).getDataItems());
+                for (String name: array){
+                    pageMetadata.getInlinkAnchors().add(new Data.ItemWithFrequency<String>(name, 1));
+                }
+            } else if (tagValue == 7L) {
                 final ArrayList<Data.ItemWithFrequency<String>> array = getStringWithFrequencyArray(((Array) item).getDataItems());
                 pageMetadata.getInlinkAnchors().addAll(array);
             }
