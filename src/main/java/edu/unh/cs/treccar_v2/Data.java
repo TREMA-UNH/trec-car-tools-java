@@ -63,6 +63,31 @@ public class Data {
         }
     }
 
+    public final static class ItemWithFrequency<Item> {
+        private Item item;
+        private int frequency;
+
+        public ItemWithFrequency(Item item, int frequency) {
+            this.item = item;
+            this.frequency = frequency;
+        }
+
+        public Item getItem() {
+            return item;
+        }
+
+        public int getFrequency() {
+            return frequency;
+        }
+
+        @Override
+        public String toString() {
+            return "(" + item +
+                    ", " + frequency +
+                    ')';
+        }
+    }
+
     /**
      * Page metadata containing information about categories, disambiguations, redirect names, and inlinks.
      */
@@ -73,9 +98,9 @@ public class Data {
         private final ArrayList<String> categoryNames;
         private final ArrayList<String> categoryIds;
         private final ArrayList<String> inlinkIds;
-        private final ArrayList<String> inlinkAnchors;
+        private final ArrayList<ItemWithFrequency<String>> inlinkAnchors;
 
-        public PageMetadata(ArrayList<String> redirectNames, ArrayList<String> disambiguationNames, ArrayList<String> disambiguationIds, ArrayList<String> categoryNames, ArrayList<String> categoryIds, ArrayList<String> inlinkIds, ArrayList<String> inlinkAnchors) {
+        public PageMetadata(ArrayList<String> redirectNames, ArrayList<String> disambiguationNames, ArrayList<String> disambiguationIds, ArrayList<String> categoryNames, ArrayList<String> categoryIds, ArrayList<String> inlinkIds, ArrayList<ItemWithFrequency<String>> inlinkAnchors) {
             this.redirectNames = redirectNames;
             this.disambiguationNames = disambiguationNames;
             this.disambiguationIds = disambiguationIds;
@@ -161,7 +186,7 @@ public class Data {
          * Anchor text of links on other pages that point here.
          * @return list of String
          */
-        public ArrayList<String> getInlinkAnchors() {
+        public ArrayList<ItemWithFrequency<String>> getInlinkAnchors() {
             return inlinkAnchors;
         }
 

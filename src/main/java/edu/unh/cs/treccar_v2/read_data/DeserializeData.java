@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+import co.nstant.in.cbor.model.Number;
 import edu.unh.cs.treccar_v2.Data;
 import edu.unh.cs.treccar_v2.Header;
 import org.jetbrains.annotations.NotNull;
@@ -172,6 +173,17 @@ public class DeserializeData {
 
 
     // ============ Data accessors ==================
+    private static ArrayList<Data.ItemWithFrequency<String>> getStringWithFrequencyArray(List<DataItem> dataItems) {
+        final ArrayList<Data.ItemWithFrequency<String>> result = new ArrayList<>();
+        for(DataItem dataItem: dataItems){
+            final List<DataItem> pair = ((Array) dataItem).getDataItems();
+            final String item = ((UnicodeString) pair.get(0)).getString();
+            final int frequency = ((Number) pair.get(1)).getValue().intValue();
+            result.add(new Data.ItemWithFrequency<String>(item, frequency));
+        }
+        return result;
+    }
+
 
     private static ArrayList<String> getUnicodeArray(List<DataItem> resultArray) {
         ArrayList<String> result = new ArrayList<String>(resultArray.size());
@@ -248,13 +260,14 @@ public class DeserializeData {
                 final ArrayList<String> array = getByteArray(((Array) item).getDataItems());
                 pageMetadata.getInlinkIds().addAll(array);
             } else if (tagValue == 6L) {
-                final ArrayList<String> array = getUnicodeArray(((Array) item).getDataItems());
+                final ArrayList<Data.ItemWithFrequency<String>> array = getStringWithFrequencyArray(((Array) item).getDataItems());
                 pageMetadata.getInlinkAnchors().addAll(array);
             }
         }
 
         return pageMetadata;
     }
+
 
     private static Data.Page pageFromCbor(DataItem dataItem) {
         List<DataItem> array = ((Array) dataItem).getDataItems();
