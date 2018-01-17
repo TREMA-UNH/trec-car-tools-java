@@ -19,7 +19,8 @@ public class DeserializeData {
 
     private static void checkSupportedRelease(Header.TrecCarHeader header) {
         if(header == null){
-            throw new CborFileTypeException("This method only supports releases " + SUPPORTED_RELEASES_STR+", but this input has no release information. Please use an appropriate reader.");
+            System.err.println("WARNING! This method only supports releases " + SUPPORTED_RELEASES_STR+", but this input has no release information. Please use an appropriate reader.");
+//            throw new CborFileTypeException("This method only supports releases " + SUPPORTED_RELEASES_STR+", but this input has no release information. Please use an appropriate reader.");
         }
 
         final String dataReleaseName = header.getProvenance().getDataReleaseName();
