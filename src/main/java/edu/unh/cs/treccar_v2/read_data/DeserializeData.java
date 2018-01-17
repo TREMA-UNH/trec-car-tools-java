@@ -25,7 +25,8 @@ public class DeserializeData {
 
         final String dataReleaseName = header.getProvenance().getDataReleaseName();
         if(!SUPPORTED_RELEASES.contains(dataReleaseName)) {
-            throw new CborFileTypeException("This method only supports releases  "+SUPPORTED_RELEASES_STR+", but input is of data release "+dataReleaseName+". Please use an appropriate reader.");
+            System.err.println("WARNING! This method only supports releases " + SUPPORTED_RELEASES_STR+", but this input has no release information. Please use an appropriate reader.");
+//            throw new CborFileTypeException("This method only supports releases  "+SUPPORTED_RELEASES_STR+", but input is of data release "+dataReleaseName+". Please use an appropriate reader.");
         }
     }
 
