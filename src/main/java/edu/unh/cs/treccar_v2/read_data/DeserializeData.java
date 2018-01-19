@@ -32,17 +32,21 @@ public class DeserializeData {
     }
 
     private static void checkIsPagesOrOutlines(Header.TrecCarHeader header) {
-        final Header.FileType fileType = header.getFileType();
-        if(! Header.FileType.OutlinesFile.equals(fileType) && !Header.FileType.PagesFile.equals(fileType)){
-            throw new CborFileTypeException("This method only supports "+Header.FileType.PagesFile+" or "+Header.FileType.OutlinesFile+", but input is of file type "+fileType+". Please use an appropriate reader.");
+        if(header != null) {
+            final Header.FileType fileType = header.getFileType();
+            if ((fileType != null) && !Header.FileType.OutlinesFile.equals(fileType) && !Header.FileType.PagesFile.equals(fileType)) {
+                throw new CborFileTypeException("This method only supports " + Header.FileType.PagesFile + " or " + Header.FileType.OutlinesFile + ", but input is of file type " + fileType + ". Please use an appropriate reader.");
+            }
         }
     }
 
 
     private static void checkIsParagraphFile(Header.TrecCarHeader header) {
-        final Header.FileType fileType = header.getFileType();
-        if(! Header.FileType.ParagraphsFile.equals(fileType)){
-            throw new CborFileTypeException("This method only supports "+Header.FileType.ParagraphsFile+", but input is of file type "+fileType+". Please use an appropriate reader.");
+        if(header != null) {
+            final Header.FileType fileType = header.getFileType();
+            if ((fileType != null) && !Header.FileType.ParagraphsFile.equals(fileType)) {
+                throw new CborFileTypeException("This method only supports " + Header.FileType.ParagraphsFile + ", but input is of file type " + fileType + ". Please use an appropriate reader.");
+            }
         }
     }
 
