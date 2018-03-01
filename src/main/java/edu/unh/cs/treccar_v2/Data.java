@@ -25,7 +25,7 @@ public class Data {
         List<String> result = new ArrayList<>();
         result.add(pageId);
         for(Section section:sections){
-            result.add(section.headingId);
+            result.add(section.getHeadingId());
         }
         return StringUtils.join(result, "/");
     }
