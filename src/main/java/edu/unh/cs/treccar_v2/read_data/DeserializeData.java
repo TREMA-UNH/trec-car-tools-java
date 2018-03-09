@@ -290,7 +290,7 @@ public class DeserializeData {
         UnicodeString pageName = (UnicodeString) array.get(1);
         ByteString pageId = (ByteString) array.get(2);
         DataItem skeletons = array.get(3);
-        Data.PageType pageType = null;
+        Data.PageType pageType = Data.PageType.Article;
         Data.PageMetadata pageMetadata = null;
         if (array.size() > 4) {
             pageType = pageTypeFromCbor(array.get(4));
