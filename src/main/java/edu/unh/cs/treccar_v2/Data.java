@@ -296,6 +296,7 @@ public class Data {
                 if(heading.getChildSections().isEmpty()) {
                     result.add(newPrefix);
                 } else {
+                    result.add(newPrefix);
                     result.addAll(flatSectionPaths_(newPrefix,heading.getChildSections()));
                 }
 
