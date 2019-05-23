@@ -11,7 +11,7 @@
 
     <groupId>com.github.TREMA-UNH</groupId>
     <artifactId>trec-car-tools-java</artifactId>
-    <version>15</version>
+    <version>16</version>
     <packaging>jar</packaging>
 
     <repositories>
