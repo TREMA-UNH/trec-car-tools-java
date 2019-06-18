@@ -13,7 +13,7 @@ import edu.unh.cs.treccar_v2.Header;
 import org.jetbrains.annotations.NotNull;
 
 public class DeserializeData {
-    private static final List<String> SUPPORTED_RELEASES = Arrays.asList("trec-car v1.6", "trec-car v2.0", "TQA", "trec-car v2.1", "benchmarkY2test");
+    private static final List<String> SUPPORTED_RELEASES = Arrays.asList("trec-car v1.6", "trec-car v2.0", "TQA", "trec-car v2.1","trec-car v2.2","trec-car v2.3", "benchmarkY2test", "benchmarkY3train", "benchmarkY3test");
     private static final String SUPPORTED_RELEASES_STR =  SUPPORTED_RELEASES.get(0)+" or "+SUPPORTED_RELEASES.get(1);
 
 
@@ -25,7 +25,7 @@ public class DeserializeData {
         else {
             final String dataReleaseName = header.getProvenance().getDataReleaseName();
             if (!SUPPORTED_RELEASES.contains(dataReleaseName)) {
-                System.err.println("WARNING! This method only supports releases " + SUPPORTED_RELEASES_STR + ", but this input has no release information. Please use an appropriate reader.");
+                System.err.println("WARNING! This file is of version "+dataReleaseName+". However this method only supports releases " + SUPPORTED_RELEASES_STR + ". Please use an appropriate reader.");
 //            throw new CborFileTypeException("This method only supports releases  "+SUPPORTED_RELEASES_STR+", but input is of data release "+dataReleaseName+". Please use an appropriate reader.");
             }
         }

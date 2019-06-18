@@ -13,15 +13,13 @@ import java.io.FileNotFoundException;
  * Date: 5/23/19
  * Time: 4:06 PM
  */
-public class TextFromParagraphs {
+public class TitlesFromPages {
   public static void main(String[] args) throws FileNotFoundException {
     System.setProperty("file.encoding", "UTF-8");
     final FileInputStream fileInputStream = new FileInputStream(new File(args[0]));
 
-    for (Data.Paragraph para : DeserializeData.iterableParagraphs(fileInputStream)) {
-      String paraId = para.getParaId();
-      String paraText = para.getTextOnly();
-      System.out.println(paraId + "\t" + paraText);
+    for (Data.Page page : DeserializeData.iterableAnnotations(fileInputStream)) {
+      System.out.println(page.getPageId() + "\t" + page.getPageName());
     }
   }
 }

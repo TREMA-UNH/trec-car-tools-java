@@ -1,4 +1,4 @@
-package edu.unh.cs.treccar_v2.playground;
+package edu.unh.cs.treccar_v2.export;
 
 import co.nstant.in.cbor.CborException;
 import edu.unh.cs.treccar_v2.Data;
@@ -16,7 +16,7 @@ import java.util.List;
  * Date: 12/10/16
  * Time: 6:11 PM
  */
-public class ExtractPlainText {
+public class FullTextFromPages {
     private static List<String> recurseArticle(Data.PageSkeleton skel, String query){
 
         if(skel instanceof Data.Section){
@@ -33,10 +33,10 @@ public class ExtractPlainText {
             Data.Para para = (Data.Para) skel;
             Data.Paragraph paragraph = para.getParagraph();
 
-            String text = "";
+            StringBuilder text = new StringBuilder();
             for(Data.ParaBody body: paragraph.getBodies()){
-               if(body instanceof Data.ParaLink) text += ((Data.ParaLink)body).getAnchorText();
-               if(body instanceof Data.ParaText) text += ((Data.ParaText)body).getText();
+               if(body instanceof Data.ParaLink) text.append(((Data.ParaLink) body).getAnchorText());
+               if(body instanceof Data.ParaText) text.append(((Data.ParaText) body).getText());
             }
             if(text.length()>10) {
                 return Collections.singletonList(query + " " + text);
@@ -46,10 +46,10 @@ public class ExtractPlainText {
         } else if (skel instanceof Data.ListItem) {
             final Data.Paragraph paragraph = ((Data.ListItem) skel).getBodyParagraph();
 
-            String text = "";
+            StringBuilder text = new StringBuilder();
             for(Data.ParaBody body: paragraph.getBodies()){
-                if(body instanceof Data.ParaLink) text += ((Data.ParaLink)body).getAnchorText();
-                if(body instanceof Data.ParaText) text += ((Data.ParaText)body).getText();
+                if(body instanceof Data.ParaLink) text.append(((Data.ParaLink) body).getAnchorText());
+                if(body instanceof Data.ParaText) text.append(((Data.ParaText) body).getText());
             }
             if(text.length()>10) {
                 return Collections.singletonList(query + " " + text);
