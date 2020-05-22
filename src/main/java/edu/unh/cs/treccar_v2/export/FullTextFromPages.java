@@ -38,9 +38,9 @@ public class FullTextFromPages {
                if(body instanceof Data.ParaLink) text.append(((Data.ParaLink) body).getAnchorText());
                if(body instanceof Data.ParaText) text.append(((Data.ParaText) body).getText());
             }
-            if(text.length()>10) {
+//            if(text.length()>10) {
                 return Collections.singletonList(query + " " + text);
-            } else return Collections.emptyList();
+//            } else return Collections.emptyList();
         } else if (skel instanceof Data.Image) {
             return Collections.singletonList("");
         } else if (skel instanceof Data.ListItem) {
@@ -54,12 +54,29 @@ public class FullTextFromPages {
             if(text.length()>10) {
                 return Collections.singletonList(query + " " + text);
             } else return Collections.emptyList();
+        } else if (skel instanceof Data.InfoBox) {
+            Data.InfoBox box = (Data.InfoBox) skel;
+            StringBuilder text = new StringBuilder();
+            text.append("Infobox ("+box.getInfoboxType()+") ");
+            for(Data.Entry<String, List<Data.PageSkeleton>> entry: box.getEntries()) {
+                if(entry.getValue().size()>0) {
+                    text.append(entry.getKey() + ": [");
+                    for (Data.PageSkeleton val : entry.getValue()) {
+                        List<String> result = recurseArticle(val, "");
+                        for(String str: result) {
+                            text.append(str+" ");
+                        }
+                    }
+                    text.append("] ");
+                }
+            }
+            return Collections.singletonList(query + " " +text.toString());
         }
         else throw new UnsupportedOperationException("not known skel "+skel);
     }
 
 
-    public static void main(String[] args) throws FileNotFoundException, CborException {
+    public static void main(String[] args) throws FileNotFoundException {
         System.setProperty("file.encoding", "UTF-8");
         final FileInputStream fileInputStream = new FileInputStream(new File(args[0]));
 

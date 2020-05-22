@@ -56,7 +56,7 @@ public class DeserializeData {
      * Iterator to read pages from the CBOR file.
      * @param inputStream  file input stream of pages CBOR file
      * @return Iterator over pages
-     * @throws CborRuntimeException
+     * @throws CborRuntimeException When CBOR is corrupt, wrong version, or otherwise broken
      */
     @NotNull
     public static Iterator<Data.Page> iterAnnotations(InputStream inputStream) throws CborRuntimeException, CborFileTypeException {
@@ -67,7 +67,7 @@ public class DeserializeData {
             protected Data.Page parseItem(DataItem dataItem) {
                 return pageFromCbor(dataItem);
             }
-        };
+        }
 
         final CborDecoder decode = new CborDecoder(inputStream);
         final PageIterator pageIterator = new PageIterator(decode);
@@ -80,7 +80,7 @@ public class DeserializeData {
     }
 
 
-    public static Header.TrecCarHeader getTrecCarHeader(InputStream inputStream) throws Header.InvalidHeaderException {
+    public static Header.TrecCarHeader getTrecCarHeader(InputStream inputStream)  {
         class PageIterator extends CborListWithHeaderIterator<Data.Page> {
             private PageIterator(CborDecoder decoder) throws CborRuntimeException {
                 super(decoder);
@@ -88,7 +88,7 @@ public class DeserializeData {
             protected Data.Page parseItem(DataItem dataItem) {
                 return pageFromCbor(dataItem);
             }
-        };
+        }
 
         final CborDecoder decode = new CborDecoder(inputStream);
         final Header.TrecCarHeader header = (new PageIterator(decode)).getHeader();
@@ -101,7 +101,7 @@ public class DeserializeData {
      * Iteratable reading pages from the CBOR file.
      * @param inputStream  file input stream of pages CBOR file
      * @return Iterable over pages
-     * @throws CborRuntimeException
+     * @throws CborRuntimeException WHen CBOR is corrupt, wrong version, or otherwise broken.
      */
     public static Iterable<Data.Page> iterableAnnotations(final InputStream inputStream) throws CborRuntimeException, CborFileTypeException {
         return new Iterable<Data.Page>() {
@@ -119,11 +119,10 @@ public class DeserializeData {
      * Use at your own risk!
      *
      * @param inputStream  file input stream of pages CBOR file
-     * @return Iterator over pages
      * @param offset byteoffset into the stream. Note that if the offset is wrong, this will and return `null`.
-     * @throws CborRuntimeException
+     * @throws CborRuntimeException   When CBOR is corrupt, wrong version, or otherwise broken.
      *
-     * @return null if no valid object can be located at the byte offsset
+     * @return Iterator over pages; null if no valid object can be located at the byte offsset
      */
     public static Data.Page annotationAtOffset(final InputStream inputStream, long offset) throws CborRuntimeException, IOException {
         inputStream.skip(offset);
@@ -138,7 +137,7 @@ public class DeserializeData {
      * Iterator to read paragraphs from the CBOR file.
      * @param inputStream  file input stream of pages CBOR file
      * @return Iterator over paragraphs
-     * @throws CborRuntimeException
+     * @throws CborRuntimeException When CBOR is corrupt, wrong version, or otherwise broken.
      */
     @NotNull
     public static Iterator<Data.Paragraph> iterParagraphs(InputStream inputStream) throws CborRuntimeException, CborFileTypeException {
@@ -149,7 +148,7 @@ public class DeserializeData {
             protected Data.Paragraph parseItem(DataItem dataItem) {
                 return paragraphFromCbor(dataItem);
             }
-        };
+        }
 
         final CborDecoder decode = new CborDecoder(inputStream);
         final ParagraphIterator paragraphIterator = new ParagraphIterator(decode);
@@ -166,7 +165,7 @@ public class DeserializeData {
      * Iterable to read paragraphs from the CBOR file.
      * @param inputStream  file input stream of pages CBOR file
      * @return Iterator over paragraphs
-     * @throws CborRuntimeException
+     * @throws CborRuntimeException When CBOR is corrupt, wrong version, or otherwise broken.
      */
     public static Iterable<Data.Paragraph> iterableParagraphs(final InputStream inputStream) throws CborRuntimeException, CborFileTypeException {
         return new Iterable<Data.Paragraph>() {
@@ -186,7 +185,7 @@ public class DeserializeData {
             final List<DataItem> pair = ((Array) dataItem).getDataItems();
             final String item = ((UnicodeString) pair.get(0)).getString();
             final int frequency = ((Number) pair.get(1)).getValue().intValue();
-            result.add(new Data.ItemWithFrequency<String>(item, frequency));
+            result.add(new Data.ItemWithFrequency<>(item, frequency));
         }
         return result;
     }
@@ -206,7 +205,7 @@ public class DeserializeData {
 
 
     private static ArrayList<String> getByteArray(List<DataItem> resultArray) {
-        ArrayList<String> result = new ArrayList<String>(resultArray.size());
+        ArrayList<String> result = new ArrayList<>(resultArray.size());
         for (DataItem item: resultArray) {
             if (Special.BREAK.equals(item)) {
                 break;
@@ -270,7 +269,7 @@ public class DeserializeData {
                 // compatibility with v1.6
                 final ArrayList<String> array = getUnicodeArray(((Array) item).getDataItems());
                 for (String name: array){
-                    pageMetadata.getInlinkAnchors().add(new Data.ItemWithFrequency<String>(name, 1));
+                    pageMetadata.getInlinkAnchors().add(new Data.ItemWithFrequency<>(name, 1));
                 }
             } else if (tagValue == 7L) {
                 final ArrayList<Data.ItemWithFrequency<String>> array = getStringWithFrequencyArray(((Array) item).getDataItems());
@@ -311,6 +310,7 @@ public class DeserializeData {
         return new Data.ListItem(nestingLevel.getValue().intValue(), paragraphFromCbor(paragraphItem));
     }
 
+
     private static Data.Para paraFromCbor(DataItem dataItem){
         return new Data.Para(paragraphFromCbor(dataItem));
     }
@@ -324,10 +324,42 @@ public class DeserializeData {
         ByteString paraid = (ByteString) array.get(1);
 
 //            List<DataItem> bodiesItem = ((Array) array.get(2)).getDataItems();
-        DataItem bodiesItem = (Array) array.get(2);
+        DataItem bodiesItem = array.get(2);
 
         return new Data.Paragraph( new String(paraid.getBytes()), paraBodiesFromCbor(bodiesItem));
     }
+
+    private static Data.InfoBox infoboxFromCbor(UnicodeString infoboxTitle, List<DataItem> keyValues) {
+        ArrayList<Data.Entry<String,List<Data.PageSkeleton>>> entries = new ArrayList<>();
+        for(DataItem keyVal: keyValues){
+            if (Special.BREAK.equals(keyVal))  break;
+            List<DataItem> keyVal_ = ((Array) keyVal).getDataItems();
+            DataItem key = keyVal_.get(0);
+            String keyStr = ((UnicodeString) key).getString();
+            DataItem values = keyVal_.get(1);
+            List<Data.PageSkeleton> valueSkelList = new ArrayList<>();
+            for (DataItem value : ((Array) values).getDataItems()) {
+                if (Special.BREAK.equals(value))  break;
+                Data.PageSkeleton valueSkel = pageSkeletonFromCbor(value);
+                valueSkelList.add(valueSkel);
+                int blubb = 1;
+            }
+            entries.add(new Data.Entry<>(keyStr, valueSkelList));
+        }
+        return new Data.InfoBox(infoboxTitle.getString(), entries);
+//        List<DataItem> array = ((Array) dataItem).getDataItems();
+//        assert(array.get(0).getTag().getValue() == 0L);
+//
+////        List<DataItem> array2 = ((Array) array.get(1)).getDataItems();
+////        assert(((UnsignedInteger) array2.get(0)).getValue().intValue() == 0);
+//        ByteString paraid = (ByteString) array.get(1);
+//
+////            List<DataItem> bodiesItem = ((Array) array.get(2)).getDataItems();
+//        DataItem bodiesItem = (Array) array.get(2);
+//
+//        return new Data.Paragraph( new String(paraid.getBytes()), paraBodiesFromCbor(bodiesItem));
+    }
+
 
 
     private static Data.PageSkeleton pageSkeletonFromCbor(DataItem dataItem){
@@ -342,13 +374,14 @@ public class DeserializeData {
             case 1: return paraFromCbor((array.get(1)));
             case 2: return imageFromCbor(array.get(1), array.get(2));
             case 3: return listFromCbor(array.get(1), array.get(2));
+            case 4: return infoboxFromCbor((UnicodeString) array.get(1), ((Array) array.get(2)).getDataItems());
             default: throw new RuntimeException("pageSkeletonFromCbor found an unhandled case: "+array.toString());
         }
     }
     private static List<Data.PageSkeleton> pageSkeletonsFromCbor(DataItem dataItem){
 
         Array skeletons = (Array) dataItem;
-        List<Data.PageSkeleton> result = new ArrayList<Data.PageSkeleton>();
+        List<Data.PageSkeleton> result = new ArrayList<>();
         for(DataItem item:skeletons.getDataItems()){
             if (Special.BREAK.equals(item))  break;
             result.add(pageSkeletonFromCbor(item));
@@ -360,7 +393,7 @@ public class DeserializeData {
 
     private static List<Data.ParaBody> paraBodiesFromCbor(DataItem dataItem) {
         Array bodies = (Array) dataItem;
-        List<Data.ParaBody> result = new ArrayList<Data.ParaBody>();
+        List<Data.ParaBody> result = new ArrayList<>();
         for (DataItem item : bodies.getDataItems()) {
             if (Special.BREAK.equals(item)) break;
             result.add(paraBodyFromCbor(item));

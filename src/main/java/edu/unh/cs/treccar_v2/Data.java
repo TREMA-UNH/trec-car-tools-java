@@ -1,10 +1,8 @@
 package edu.unh.cs.treccar_v2;
 
 import org.apache.commons.lang3.StringUtils;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 
 /*
  * User: dietz
@@ -46,11 +44,11 @@ public class Data {
     /**
      * Type of a page, namely Article, Category, Disambiguation, or Redirect
      */
-    public static enum PageType {
+    public enum PageType {
         Article(0), Category(1), Disambiguation(2), Redirect(3);
 
         private int value;
-        private PageType(int value) {
+        PageType(int value) {
             this.value = value;
         }
 
@@ -209,7 +207,7 @@ public class Data {
     /**
      * Shared interface of page elements
      */
-    public static interface PageSkeleton {
+    public interface PageSkeleton {
     }
 
 
@@ -239,7 +237,7 @@ public class Data {
         /**
          * Page title (aka Page name) as human-readable string --- no underscores, but may
          * contain diacritics and other UTF-8 characters.
-         * @return
+         * @return title of page
          */
         public String getPageName() {
             return pageName;
@@ -257,13 +255,13 @@ public class Data {
 
         /**
          * The type of the page, e.g. Article, Category, Disambiguation, or Redirect.
-         * @return
+         * @return type
          */
         public PageType getPageType() {  return pageType; }
 
         /**
          * Get metadata of this page, e.g., inlinks, category tags, etc.
-         * @return
+         * @return metadata
          */
         public PageMetadata getPageMetadata() {
             return pageMetadata;
@@ -271,7 +269,7 @@ public class Data {
 
         /**
          * Access the elements this page is composed off (sections, paragraphs, ...)
-         * @return
+         * @return list of skeletons (required instance checking and casting)
          */
         public List<PageSkeleton> getSkeleton() {
             return skeleton;
@@ -279,7 +277,7 @@ public class Data {
 
         /**
          * Get sections contained in this page. Similar to {@link #getSkeleton()}, but only contains sections.
-         * @return
+         * @return  subsections
          */
         public ArrayList<Section> getChildSections() {
             return childSections;
@@ -365,9 +363,7 @@ public class Data {
                     newPrefix.addAll(prefix);
                     newPrefix.add(section);
 
-                    if (section.getChildren().isEmpty()) {
-
-                    } else {
+                    if (!section.getChildren().isEmpty()) {
                         result.addAll(flatSectionPathsParagraphs_(newPrefix, section.getChildren()));
                     }
 
@@ -444,7 +440,7 @@ public class Data {
 
         /**
          * Same as {@link #getHeading()} but provides an identifier that is guaranteed to be ASCII, without spaces or slashes.
-         * @return
+         * @return CAR identifier of heading
          */
         public String getHeadingId() {
             return headingId;
@@ -459,7 +455,7 @@ public class Data {
 
         /**
          * List nested sections.
-         * @return
+         * @return subsections
          */
         public List<Section> getChildSections() { return childSections; }
 
@@ -496,7 +492,7 @@ public class Data {
     /**
      * Shared interface of elements inside a paragraph.
      */
-    public static interface ParaBody {
+    public interface ParaBody {
     }
 
     /**
@@ -551,7 +547,7 @@ public class Data {
 
         /**
          * URL to the image on the internet
-         * @return
+         * @return url
          */
         public String getImageUrl() {
             return imageUrl;
@@ -559,7 +555,7 @@ public class Data {
 
         /**
          * Access to caption.
-         * @return
+         * @return skeleton of image caption
          */
         public List<PageSkeleton> getCaptionSkel() {
             return captionSkel;
@@ -609,7 +605,7 @@ public class Data {
 
         /**
          * Nesting level at which this list item was found.
-         * @return
+         * @return depth
          */
         public int getNestingLevel() {
             return nestingLevel;
@@ -617,7 +613,7 @@ public class Data {
 
         /**
          * Content of the list entry.
-         * @return
+         * @return content as paragraph
          */
         public Paragraph getBodyParagraph() {
             return bodyParagraph;
@@ -647,8 +643,97 @@ public class Data {
         }
     }
 
+    public final static class Entry<K,V> implements java.util.Map.Entry<K,V> {
+        private K key;
+        private V value;
 
-    /**
+        public Entry(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "key=" + key +
+                    ", value=" + value +
+                    '}';
+        }
+
+        @Override
+        public V setValue(V v) {
+            throw new UnsupportedOperationException("Read-only entry");
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Entry)) return false;
+            Entry<?, ?> entry = (Entry<?, ?>) o;
+            return Objects.equals(getKey(), entry.getKey()) &&
+                    Objects.equals(getValue(), entry.getValue());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getKey(), getValue());
+        }
+    }
+
+
+
+    public final static class InfoBox implements PageSkeleton {
+        private final String infoboxType;
+        private List<Data.Entry<String, List<PageSkeleton>>> entries;
+
+        public InfoBox(String infoboxType, List<Data.Entry<String, List<PageSkeleton>>> entries) {
+
+            this.infoboxType = infoboxType;
+            this.entries = entries;
+        }
+
+        public String getInfoboxType() {
+            return infoboxType;
+        }
+
+        public List<Data.Entry<String, List<PageSkeleton>>> getEntries() {
+            return entries;
+        }
+
+        @Override
+        public String toString() {
+            return "InfoBox{" +
+                    "infoboxType='" + infoboxType + '\'' +
+                    ", entries=" + entries +
+                    '}';
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof InfoBox)) return false;
+            InfoBox infoBox = (InfoBox) o;
+            return Objects.equals(getInfoboxType(), infoBox.getInfoboxType()) &&
+                    Objects.equals(getEntries(), infoBox.getEntries());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(getInfoboxType(), getEntries());
+        }
+    }
+
+
+
+        /**
      * A paragraph element.
      */
     public final static class Paragraph  {
@@ -666,7 +751,7 @@ public class Data {
          * Note that any paragraph with the same text, will get the same identifier.
          * Therefore, it is likely that several pages will contain a paragraph with this identifier.
          * This is because the unique identifier is based on the text content.
-         * @return
+         * @return paragraph identifier
          */
         public String getParaId() {
             return paraId;
@@ -674,7 +759,7 @@ public class Data {
 
         /**
          * Content of the paragraph, as a list of text and links. (No further nesting)
-         * @return
+         * @return list of bodies
          */
         public List<ParaBody> getBodies() {
             return bodies;
@@ -750,7 +835,7 @@ public class Data {
 
         /**
          * Get the text of this segment.
-         * @return
+         * @return text
          */
         public String getText() {
             return text;
@@ -809,7 +894,7 @@ public class Data {
 
         /**
          * True if this link points to a section, if false points to a page.
-         * @return
+         * @return true if link points to a section within an article (false, if points to article)
          */
         public boolean hasLinkSection(){
             return (this.linkSection != null) && (!Objects.equals(this.linkSection, ""));
@@ -825,7 +910,7 @@ public class Data {
 
         /**
          * The page id of the link target.
-         * @return
+         * @return CAR identifier of the page
          */
         public String getPageId() {
             return pageId;
@@ -833,7 +918,7 @@ public class Data {
 
         /**
          * Anchor text of the link
-         * @return
+         * @return  visible text
          */
         public String getAnchorText() {
             return anchorText;
@@ -841,7 +926,7 @@ public class Data {
 
         /**
          * Page name of the link target
-         * @return
+         * @return target page
          */
         public String getPage() {
             return page;

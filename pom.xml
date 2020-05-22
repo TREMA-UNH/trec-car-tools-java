@@ -11,7 +11,7 @@
 
     <groupId>com.github.TREMA-UNH</groupId>
     <artifactId>trec-car-tools-java</artifactId>
-    <version>17</version>
+    <version>18</version>
     <packaging>jar</packaging>
 
     <repositories>
@@ -25,7 +25,7 @@
         <dependency>
             <groupId>co.nstant.in</groupId>
             <artifactId>cbor</artifactId>
-            <version>0.7</version>
+            <version>0.8</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
