@@ -97,8 +97,12 @@ public class Data {
         private final ArrayList<String> categoryIds;
         private final ArrayList<String> inlinkIds;
         private final ArrayList<ItemWithFrequency<String>> inlinkAnchors;
+        private final ArrayList<String> wikiDataQid;
+        private final ArrayList<String> siteId;
+        private final ArrayList<String> pageTags;
 
-        public PageMetadata(ArrayList<String> redirectNames, ArrayList<String> disambiguationNames, ArrayList<String> disambiguationIds, ArrayList<String> categoryNames, ArrayList<String> categoryIds, ArrayList<String> inlinkIds, ArrayList<ItemWithFrequency<String>> inlinkAnchors) {
+        public PageMetadata(ArrayList<String> redirectNames, ArrayList<String> disambiguationNames, ArrayList<String> disambiguationIds, ArrayList<String> categoryNames, ArrayList<String> categoryIds, ArrayList<String> inlinkIds, ArrayList<ItemWithFrequency<String>> inlinkAnchors
+            , ArrayList<String> wikiDataQid, ArrayList<String> siteId, ArrayList<String> pageTags) {
             this.redirectNames = redirectNames;
             this.disambiguationNames = disambiguationNames;
             this.disambiguationIds = disambiguationIds;
@@ -106,6 +110,9 @@ public class Data {
             this.categoryIds = categoryIds;
             this.inlinkIds = inlinkIds;
             this.inlinkAnchors = inlinkAnchors;
+            this.wikiDataQid = wikiDataQid;
+            this.siteId = siteId;
+            this.pageTags = pageTags;
         }
 
         public PageMetadata() {
@@ -116,6 +123,9 @@ public class Data {
             this.categoryIds = new ArrayList<>();
             this.inlinkIds = new ArrayList<>();
             this.inlinkAnchors = new ArrayList<>();
+            this.wikiDataQid = new ArrayList<>();
+            this.siteId = new ArrayList<>();
+            this.pageTags = new ArrayList<>();
         }
 
         /**
@@ -188,6 +198,31 @@ public class Data {
             return inlinkAnchors;
         }
 
+
+        /**
+         * Language and time independent identifier from Wikidata, format Qxxxx
+         * @return singleton list or empty list (if not exposed in cbor).
+         */
+        public ArrayList<String> getWikiDataQid() {
+            return wikiDataQid;
+        }
+
+        /**
+         * SiteID for this page, e.g. enwiki or jawiki.
+         * @return singleton list, or empty list (if not exposed in cbor).
+         */
+        public ArrayList<String> getSiteId() {
+            return siteId;
+        }
+
+        /**
+         * Template-basedpage tags, as requested during dump conversion, e.g. "Vital article" or "Good article".
+         * @return list of page tags
+         */
+        public ArrayList<String> getPageTags() {
+            return pageTags;
+        }
+
         @Override
         public String toString() {
             return "PageMetadata{" +
@@ -198,6 +233,9 @@ public class Data {
                     "\n, categoryIds=" + categoryIds +
                     "\n, inlinkIds=" + inlinkIds +
                     "\n, inlinkAnchors=" + inlinkAnchors +
+                    "\n, wikiDataQid=" + wikiDataQid +
+                    "\n, siteId=" + siteId +
+                    "\n, pageTags=" + pageTags +
                     '}';
         }
     }

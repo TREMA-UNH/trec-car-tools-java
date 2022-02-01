@@ -13,7 +13,7 @@ import edu.unh.cs.treccar_v2.Header;
 import org.jetbrains.annotations.NotNull;
 
 public class DeserializeData {
-    private static final List<String> SUPPORTED_RELEASES = Arrays.asList("trec-car v1.6", "trec-car v2.0", "TQA", "trec-car v2.1","trec-car v2.2","trec-car v2.3", "benchmarkY2test", "benchmarkY3train", "benchmarkY3test");
+    private static final List<String> SUPPORTED_RELEASES = Arrays.asList("trec-car v1.6", "trec-car v2.0", "TQA", "trec-car v2.1","trec-car v2.2","trec-car v2.3", "benchmarkY2test", "benchmarkY3train", "benchmarkY3test", "trec-car v2.4", "trec-car v2.5", "trec-car v2.6");
     private static final String SUPPORTED_RELEASES_STR =  SUPPORTED_RELEASES.get(0)+" or "+SUPPORTED_RELEASES.get(1);
 
 
@@ -274,6 +274,15 @@ public class DeserializeData {
             } else if (tagValue == 7L) {
                 final ArrayList<Data.ItemWithFrequency<String>> array = getStringWithFrequencyArray(((Array) item).getDataItems());
                 pageMetadata.getInlinkAnchors().addAll(array);
+            } else if (tagValue == 8L) {
+                final String s = ((UnicodeString) item).getString();
+                pageMetadata.getWikiDataQid().add(s);
+            } else if (tagValue == 9L) {
+                final String s = ((UnicodeString) item).getString();
+                pageMetadata.getSiteId().add(s);
+            } else if (tagValue == 10L) {
+                final ArrayList<String> array = getUnicodeArray(((Array) item).getDataItems());
+                pageMetadata.getPageTags().addAll(array);
             }
         }
 
