@@ -13,7 +13,7 @@ import edu.unh.cs.treccar_v2.Header;
 import org.jetbrains.annotations.NotNull;
 
 public class DeserializeData {
-    private static final List<String> SUPPORTED_RELEASES = Arrays.asList("trec-car v1.6", "trec-car v2.0", "TQA", "trec-car v2.1","trec-car v2.2","trec-car v2.3", "benchmarkY2test", "benchmarkY3train", "benchmarkY3test", "trec-car v2.4","trec-car v2.4.1", "trec-car v2.5", "trec-car v2.6");
+    private static final List<String> SUPPORTED_RELEASES = Arrays.asList("trec-car v1.6", "trec-car v2.0", "TQA", "trec-car v2.1","trec-car v2.2","trec-car v2.3", "benchmarkY2test", "benchmarkY3train", "benchmarkY3test", "trec-car v2.4","trec-car v2.4.1", "trec-car v2.5", "trec-car v2.6", "dbpediav2");
     private static final String SUPPORTED_RELEASES_STR = String.join(", ",SUPPORTED_RELEASES);
 
 
